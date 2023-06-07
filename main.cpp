@@ -20,7 +20,7 @@ using namespace std;
     #include "gearbox_raw_test_data.h"
 #else
     #include "gearbox_test_data.h"
-#endif		
+#endif
 #include "BufAttributes.h"
 
 
@@ -140,7 +140,7 @@ int32_t main(void)
     printf("+-----------------------------------------------------------------------+\n");
     printf("|                          tflu_gearbox_anomaly                         |\n");
     printf("+-----------------------------------------------------------------------+\n");
-    
+
 
     /* Init I2C2 to access codec */
     I2C2_Init();
@@ -164,75 +164,78 @@ int32_t main(void)
     I2S_ENABLE_TXDMA(I2S0);
     I2S_ENABLE_TX(I2S0);
 
-   printf("\nThis sample code run gearbox anomaly detaction\n");
+    printf("\nThis sample code run gearbox anomaly detaction\n");
 
 
 #ifdef RAW_DATA
-   uint16_t FeatureElements = 4; //a1~a4 sensors
-	 const uint16_t win_size = 300;
+    uint16_t FeatureElements = 4; //a1~a4 sensors
+    const uint16_t win_size = 300;
 #else
-   const uint32_t FeatureElements = 16; //4 sensors * 4 features
+    const uint32_t FeatureElements = 16; //4 sensors * 4 features
 #endif
-    
-   const uint16_t TestNum = sizeof(y_test)/sizeof(uint8_t);	 
-	 static float Threshold = GetThreshold();
-			 
-   
-   uint16_t correct_acc = 0;
-   const char outputClass[2][1] = {0, 1};
-	 
+
+    const uint16_t TestNum = sizeof(y_test) / sizeof(uint8_t);
+    static float Threshold = GetThreshold();
+
+
+    uint16_t correct_acc = 0;
+    const char outputClass[2][1] = {0, 1};
+
 #ifdef RAW_DATA
-   FeatureElements *= win_size;	 // 1 input has win_size * featureNumber
+    FeatureElements *= win_size;  // 1 input has win_size * featureNumber
 #endif
-	 
-	 float X_Single_Input[FeatureElements];
-	 memcpy(X_Single_Input, &X_test[0], FeatureElements * sizeof(float));
-	 
+
+    float X_Single_Input[FeatureElements];
+    memcpy(X_Single_Input, &X_test[0], FeatureElements * sizeof(float));
 
 
-   MLPB mlpb(X_Single_Input, FeatureElements);	
-		
-		
-	 uint8_t normal_or_anomaly; // record true or false of each time 	
-   for (uint16_t i = 0; i < TestNum; i++) {
-		 
-       #ifdef RAW_DATA       
-		   memcpy(X_Single_Input, &X_test[i*FeatureElements], FeatureElements * sizeof(float));
-       #else
-       memcpy(X_Single_Input, &X_test[i*FeatureElements], FeatureElements * sizeof(float));
-       #endif		 
-		   
-		 
-		 
-		 //printf("XXXXX %d: %f\r\n",i, X_test[i][0]);
-		   
-       mlpb.ExtractFeatures();
 
-       #ifdef RAW_DATA
-		   mlpb.CalculateGearBoxWindow(FeatureElements, win_size, GetMaxValTrain(), GetMinValTrain());
-       #endif				 
-		   
-		   #ifdef DNN
-		   mlpb.Classify();  
-       normal_or_anomaly = mlpb.GetDnnResult();
-		   #else
-		   mlpb.EncoderDecoder();     
-       normal_or_anomaly = mlpb.GetMaeResult(Threshold);
-			 #endif
-		   
-		   //comment out this for clean debug window
-		   printf("%d: inference:%d, answer:%d\r\n", i, normal_or_anomaly, y_test[i]); 
-			
-		   if(normal_or_anomaly == y_test[i]){
-			    correct_acc++;
-			 }
-	 }
-	 
-	 printf("The total %d test data's accuracy is %f\r\n",TestNum, correct_acc/(float)TestNum);
-	 
+    MLPB mlpb(X_Single_Input, FeatureElements);
 
-    while(1)
+
+    uint8_t normal_or_anomaly; // record true or false of each time
+
+    for (uint16_t i = 0; i < TestNum; i++)
     {
-        
+
+#ifdef RAW_DATA
+        memcpy(X_Single_Input, &X_test[i * FeatureElements], FeatureElements * sizeof(float));
+#else
+        memcpy(X_Single_Input, &X_test[i * FeatureElements], FeatureElements * sizeof(float));
+#endif
+
+
+
+        //printf("XXXXX %d: %f\r\n",i, X_test[i][0]);
+
+        mlpb.ExtractFeatures();
+
+#ifdef RAW_DATA
+        mlpb.CalculateGearBoxWindow(FeatureElements, win_size, GetMaxValTrain(), GetMinValTrain());
+#endif
+
+#ifdef DNN
+        mlpb.Classify();
+        normal_or_anomaly = mlpb.GetDnnResult();
+#else
+        mlpb.EncoderDecoder();
+        normal_or_anomaly = mlpb.GetMaeResult(Threshold);
+#endif
+
+        //comment out this for clean debug window
+        printf("%d: inference:%d, answer:%d\r\n", i, normal_or_anomaly, y_test[i]);
+
+        if (normal_or_anomaly == y_test[i])
+        {
+            correct_acc++;
+        }
+    }
+
+    printf("The total %d test data's accuracy is %f\r\n", TestNum, correct_acc / (float)TestNum);
+
+
+    while (1)
+    {
+
     }
 }

@@ -19,20 +19,20 @@
 #pragma once
 
 #ifdef __has_attribute
-#define HAVE_ATTRIBUTE(x) __has_attribute(x)
+    #define HAVE_ATTRIBUTE(x) __has_attribute(x)
 #else   /* __has_attribute */
-#define HAVE_ATTRIBUTE(x) 0
+    #define HAVE_ATTRIBUTE(x) 0
 #endif  /* __has_attribute */
 
 #if HAVE_ATTRIBUTE(aligned) || (defined(__GNUC__) && !defined(__clang__))
 
-/* We want all buffers/sections to be aligned to 16 byte  */
-#define ALIGNMENT_REQ               aligned(16)
-/* Form the attributes, alignment is mandatory */
-#define ALIGNMENT_ATTRIBUTE   __attribute__((ALIGNMENT_REQ))
+    /* We want all buffers/sections to be aligned to 16 byte  */
+    #define ALIGNMENT_REQ               aligned(16)
+    /* Form the attributes, alignment is mandatory */
+    #define ALIGNMENT_ATTRIBUTE   __attribute__((ALIGNMENT_REQ))
 
 #else /* HAVE_ATTRIBUTE(aligned) || (defined(__GNUC__) && !defined(__clang__)) */
 
-#define ALIGNMENT_ATTRIBUTE
+    #define ALIGNMENT_ATTRIBUTE
 
 #endif /* HAVE_ATTRIBUTE(aligned) || (defined(__GNUC__) && !defined(__clang__)) */

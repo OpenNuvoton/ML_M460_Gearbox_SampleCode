@@ -27,40 +27,41 @@
 
 #include "Model.h"
 
-class MLPB {
+class MLPB
+{
 
 public:
-    MLPB(float * ptrAudioBuffer, uint32_t nElements);
+    MLPB(float *ptrAudioBuffer, uint32_t nElements);
 
     ~MLPB() = default;
 
-    void ExtractFeatures(); 
+    void ExtractFeatures();
     void Classify();
     int GetDnnResult();
     void EncoderDecoder();
     int  GetMaeResult(const float Threshold);
-    int  GetTopClass(const std::vector<float>& prediction);
+    int  GetTopClass(const std::vector<float> &prediction);
     void CalculateGearBoxWindow(const uint16_t, const uint16_t, const float, const float);
 
     //std::vector<int16_t> inputBuffer;
-    float * ptrInputBuffer;
+    float *ptrInputBuffer;
     std::vector<float> inputBuffer;
     std::vector<float> featureBuffer;
     std::vector<float> output;
     //std::vector<float> transFetBuffer;
-   
+
     int numOutClasses;
     int numFeatures;
-		
-		int numFeaturesModelIn;
+
+    int numFeaturesModelIn;
 
 protected:
     /** @brief Initialises the model */
     bool _InitModel();
     void InitMlpb();
-    
-    Model* model;
-    //DnnModel* dnnmodel; 
+
+    Model *model;
+    //DnnModel* dnnmodel;
 };
 
 
@@ -68,11 +69,11 @@ protected:
  * @brief   Gets the pointer to the model data
  * @return  a uint8_t pointer
  **/
-float kurtosis(float* datavec, uint16_t len);
+float kurtosis(float *datavec, uint16_t len);
 
-float absSum(float* datavec, uint16_t len);
+float absSum(float *datavec, uint16_t len);
 
-void normalize(float* datavec, int len, float max, float min);
+void normalize(float *datavec, int len, float max, float min);
 
 
 

@@ -22,21 +22,22 @@
 #include "BufAttributes.h"
 
 #ifndef ACTIVATION_BUF_SZ
-#define ACTIVATION_BUF_SZ       (0x3000) /* default value of 128kiB */
+    #define ACTIVATION_BUF_SZ       (0x3000) /* default value of 128kiB */
 #endif /* ACTIVATION_BUF_SZ */
 static uint8_t  _tensor_arena[ACTIVATION_BUF_SZ] ALIGNMENT_ATTRIBUTE;
 
 /* Initialise the model */
 Model::~Model()
 {
-    if (this->_interpreter) {
+    if (this->_interpreter)
+    {
         delete this->_interpreter;
     }
 }
 
 Model::Model() :
-        _inited (false),
-        _type(kTfLiteNoType)
+    _inited(false),
+    _type(kTfLiteNoType)
 {
     this->_errorReporterPtr = &this->_uErrorReporter;
 }
@@ -46,14 +47,15 @@ bool Model::Init()
     /* Following tf lite micro example:
      * Map the model into a usable data structure. This doesn't involve any
      * copying or parsing, it's a very lightweight operation. */
-    const uint8_t* model_addr = ModelPointer();
+    const uint8_t *model_addr = ModelPointer();
     this->_model = ::tflite::GetModel(model_addr);
 
-    if (this->_model->version() != TFLITE_SCHEMA_VERSION) {
+    if (this->_model->version() != TFLITE_SCHEMA_VERSION)
+    {
         this->_errorReporterPtr->Report(
-                "model's schema version %d is not equal "
-                "to supported version %d.",
-                this->_model->version(), TFLITE_SCHEMA_VERSION);
+            "model's schema version %d is not equal "
+            "to supported version %d.",
+            this->_model->version(), TFLITE_SCHEMA_VERSION);
         return false;
     }
 
@@ -68,11 +70,12 @@ bool Model::Init()
 
     /* Build an interpreter to run the model with. */
     this->_interpreter = new ::tflite::MicroInterpreter(
-            this->_model, this->GetOpResolver(),
-            this->GetTensorArena(), this->GetActivationBufferSize(),
-            this->_errorReporterPtr);
+        this->_model, this->GetOpResolver(),
+        this->GetTensorArena(), this->GetActivationBufferSize(),
+        this->_errorReporterPtr);
 
-    if (!this->_interpreter) {
+    if (!this->_interpreter)
+    {
         printf("Failed to allocate interpreter\n");
         return false;
     }
@@ -80,7 +83,8 @@ bool Model::Init()
     /* Allocate memory from the tensor_arena for the model's tensors. */
     TfLiteStatus allocate_status = this->_interpreter->AllocateTensors();
 
-    if (allocate_status != kTfLiteOk) {
+    if (allocate_status != kTfLiteOk)
+    {
         this->_errorReporterPtr->Report("AllocateTensors() failed");
         printf("Tensor allocation failed!\n");
         delete this->_interpreter;
@@ -91,10 +95,13 @@ bool Model::Init()
     this->_input = this->_interpreter->input(0);
     this->_output = this->_interpreter->output(0);
 
-    if (!this->_input || !this->_output) {
+    if (!this->_input || !this->_output)
+    {
         printf("Failed to get tensors\n");
         return false;
-    } else {
+    }
+    else
+    {
         this->_type = this->_input->type;
 
         /* Clear the tensor */
@@ -114,31 +121,43 @@ bool Model::IsInited() const
 bool Model::RunInference()
 {
     bool inference_state = false;
-    if (this->_model && this->_interpreter) {
-        if (kTfLiteOk != this->_interpreter->Invoke()) {
+
+    if (this->_model && this->_interpreter)
+    {
+        if (kTfLiteOk != this->_interpreter->Invoke())
+        {
             printf("Invoke failed.\n");
-        } else {
+        }
+        else
+        {
             inference_state = true;
         }
-    } else {
+    }
+    else
+    {
         printf("Error: No interpreter!\n");
     }
+
     return inference_state;
 }
 
-TfLiteTensor* Model::GetInputTensor() const
+TfLiteTensor *Model::GetInputTensor() const
 {
-    if (this->_model && this->_interpreter) {
+    if (this->_model && this->_interpreter)
+    {
         return this->_input;
     }
+
     return nullptr;
 }
 
-TfLiteTensor* Model::GetOutputTensor() const
+TfLiteTensor *Model::GetOutputTensor() const
 {
-    if (this->_model && this->_interpreter) {
+    if (this->_model && this->_interpreter)
+    {
         return this->_output;
     }
+
     return nullptr;
 }
 
@@ -147,23 +166,27 @@ TfLiteType Model::GetType() const
     return this->_type;
 }
 
-TfLiteIntArray* Model::GetInputShape() const
+TfLiteIntArray *Model::GetInputShape() const
 {
-    if (this->_model && this->_interpreter) {
+    if (this->_model && this->_interpreter)
+    {
         return this->_input->dims;
     }
+
     return nullptr;
 }
 
-TfLiteIntArray* Model::GetOutputShape() const
+TfLiteIntArray *Model::GetOutputShape() const
 {
-    if (this->_model && this->_interpreter) {
+    if (this->_model && this->_interpreter)
+    {
         return this->_output->dims;
     }
+
     return nullptr;
 }
 
-const uint8_t* Model::ModelPointer()
+const uint8_t *Model::ModelPointer()
 {
     return GetModelPointer();
 }
@@ -175,7 +198,7 @@ size_t Model::ModelSize()
 
 
 
-const tflite::MicroOpResolver& Model::GetOpResolver()
+const tflite::MicroOpResolver &Model::GetOpResolver()
 {
     return this->_opResolver;
 }
@@ -186,13 +209,13 @@ bool Model::EnlistOperations()
     this->_opResolver.AddFullyConnected();
     this->_opResolver.AddRelu();
     this->_opResolver.AddLogistic();
-	  this->_opResolver.AddSoftmax();
+    this->_opResolver.AddSoftmax();
     this->_opResolver.AddDequantize();
 
     return true;
 }
 
-uint8_t* Model::GetTensorArena()
+uint8_t *Model::GetTensorArena()
 {
     return _tensor_arena;
 }

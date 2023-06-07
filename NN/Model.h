@@ -31,16 +31,17 @@
 /**
  * @brief   NN model class wrapping the underlying Tensorflow-Lite-Micro API
  */
-class Model {
+class Model
+{
 private:
     tflite::MicroErrorReporter      _uErrorReporter;                    /* Error reporter object */
-    tflite::ErrorReporter*          _errorReporterPtr   = nullptr;      /* Pointer to the error reporter */
-    const tflite::Model*            _model              = nullptr;      /* Tflite model pointer */
-    tflite::MicroInterpreter*       _interpreter        = nullptr;      /* Tflite interpreter */
+    tflite::ErrorReporter          *_errorReporterPtr   = nullptr;      /* Pointer to the error reporter */
+    const tflite::Model            *_model              = nullptr;      /* Tflite model pointer */
+    tflite::MicroInterpreter       *_interpreter        = nullptr;      /* Tflite interpreter */
     bool                            _inited             = false;        /* Indicates whether this object has been initialised */
 
-    TfLiteTensor*                   _input              = nullptr;      /* Model's input tensor pointer */
-    TfLiteTensor*                   _output             = nullptr;      /* Model's output tensor pointer */
+    TfLiteTensor                   *_input              = nullptr;      /* Model's input tensor pointer */
+    TfLiteTensor                   *_output             = nullptr;      /* Model's output tensor pointer */
     TfLiteType                      _type               = kTfLiteNoType;/* Model's data type */
 
 
@@ -55,19 +56,19 @@ public:
     virtual ~Model();
 
     /** @brief  Gets the pointer to the model's input tensor */
-    TfLiteTensor* GetInputTensor() const;
+    TfLiteTensor *GetInputTensor() const;
 
     /** @brief  Gets the pointer to the model's output tensor */
-    TfLiteTensor* GetOutputTensor() const;
+    TfLiteTensor *GetOutputTensor() const;
 
     /** @brief  Gets the model's data type */
     TfLiteType GetType() const;
 
     /** @brief  Gets the pointer to the model's input shape */
-    TfLiteIntArray* GetInputShape() const;
+    TfLiteIntArray *GetInputShape() const;
 
     /** @brief  Gets the pointer to the model's input shape */
-    TfLiteIntArray* GetOutputShape() const;
+    TfLiteIntArray *GetOutputShape() const;
 
     /** @brief  Initialise the model class object */
     bool Init();
@@ -78,32 +79,32 @@ public:
     /** @brief  Runs the inference (invokes the interpreter) */
     bool RunInference();
 
-    
 
-    virtual const uint8_t* ModelPointer();
+
+    virtual const uint8_t *ModelPointer();
 
     virtual size_t ModelSize();
 
-//protected:
+    //protected:
     Model();
 
-     //const tflite::MicroOpResolver& GetOpResolver() = 0;
-     //bool EnlistOperations() = 0;
-     //uint8_t* GetTensorArena() = 0;
-     //size_t GetActivationBufferSize() = 0;
+    //const tflite::MicroOpResolver& GetOpResolver() = 0;
+    //bool EnlistOperations() = 0;
+    //uint8_t* GetTensorArena() = 0;
+    //size_t GetActivationBufferSize() = 0;
 
     /** @brief   Gets the reference to op resolver interface class */
-    const tflite::MicroOpResolver& GetOpResolver();
+    const tflite::MicroOpResolver &GetOpResolver();
 
     /** @brief   Adds operations to the op resolver instance */
     bool EnlistOperations();
 
     /** @brief   Gets a pointer to the tensor arena */
-    uint8_t* GetTensorArena();
+    uint8_t *GetTensorArena();
 
     /** @brief   Gets the total size of tensor arena available for use */
-    size_t GetActivationBufferSize(); 
-    
+    size_t GetActivationBufferSize();
+
 };
 
 /* Model is exposed by the following functions */
@@ -112,7 +113,7 @@ public:
  * @brief   Gets the pointer to the model data
  * @return  a uint8_t pointer
  **/
-const uint8_t* GetModelPointer();
+const uint8_t *GetModelPointer();
 
 /**
  * @brief   Gets the model length in bytes

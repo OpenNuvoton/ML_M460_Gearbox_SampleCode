@@ -22,14 +22,14 @@
 
 bool MLPB::_InitModel()
 {
-	  
-    
+
+
     this->model = new Model();
-  	//this->model =  std::unique_ptr<DnnModel>(new DnnModel());
+    //this->model =  std::unique_ptr<DnnModel>(new DnnModel());
     //this->model =  std::make_unique<DnnModel>();  //C++14
 
     //if (this->model) {
-        return this->model->Init();
+    return this->model->Init();
     //}
     //printf("Failed to allocate memory for the model\r\n");
     //return false;

@@ -23,9 +23,12 @@
 bool KWS::_InitModel()
 {
     this->model = std::unique_ptr<DsCnnModel>(new DsCnnModel());
-    if (this->model) {
+
+    if (this->model)
+    {
         return this->model->Init();
     }
+
     printf("Failed to allocate memory for the model\r\n");
     return false;
 }
